@@ -1,0 +1,4 @@
+pyocr
+=====
+
+ocr for epigraphy.
