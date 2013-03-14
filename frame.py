@@ -1,5 +1,8 @@
 #coding=utf8
-
+'''
+2013 ПМ-ПУ
+Сун Цзыжуй
+'''
 from PIL import Image
 import wx
 import os
@@ -60,8 +63,14 @@ class MyFrame(wx.Frame):
         self.menu_help.AppendSeparator()
         self.menu_about=self.menu_help.Append(-1,"About\n关于") #关于
 
+        #debug
+        self.menu_debug = wx.Menu()
+        self.menu_hist=self.menu_debug.Append(-1,"Histogram") #文档
+        self.Bind(wx.EVT_MENU, self.OnDebug_hist, self.menu_hist)
+
         menuBar = wx.MenuBar()
         menuBar.Append(self.menu_file, "File")
+        menuBar.Append(self.menu_debug, "Debug")
         menuBar.Append(self.menu_ocr, "OCR")
         menuBar.Append(self.menu_help, "Help")
 
@@ -70,7 +79,22 @@ class MyFrame(wx.Frame):
         #显示面板
         self.Canvas = wx.StaticBitmap(self.sw, bitmap=wx.EmptyBitmap(0,0))
         self.image=[] #PIL.Image list 显示第一个
-    
+
+    def OnDebug_hist(self,event):
+        '''Debug 
+        灰度直方图'''
+        class HistFrame(wx.Frame):
+            def __init__(self,image):
+                ''' image=PIL.Image'''
+                wx.Frame.__init__(self, None, -1, "Histogram",size=(256,200))
+                img=ocr_binary_image.HistogramImage(image,256,200)
+                img=pilImage_to_wxImage(img)
+                Canvas = wx.StaticBitmap(self, bitmap=wx.BitmapFromImage(img))
+                pass
+            pass
+        dialog_debug=HistFrame(self.image[-1])
+        dialog_debug.Show()
+
     def CanvasUpdate(self):
         ''' 显示图像'''
         if self.image:

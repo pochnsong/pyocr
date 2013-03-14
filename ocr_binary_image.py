@@ -5,7 +5,8 @@
 
 
 from ImageTool import *
-
+import Image
+import ImageDraw
 
 def ConvertImage(image):
     ''' 把彩色图像转换成灰度图像
@@ -19,6 +20,8 @@ def HistogramImage(image, w=512, h=256):
     ''' 获取灰度直方图
     image=灰度图像
     '''
+    image=image.convert("L")
+
     hist = image.histogram()
     hist = map(lambda i:h-h*i/max(hist),hist) #归一化,之后会有误差
 
