@@ -8,6 +8,7 @@ import wx
 import os
 from ImageTool import *
 import ocr_binary_image #二值化模块
+import ocr_denoice_image #去噪
 
 class MyFrame(wx.Frame):
     def __init__(self):
@@ -41,10 +42,13 @@ class MyFrame(wx.Frame):
         self.menu_convert=self.menu_ocr.Append(-1,"Convert Image\n图像灰度化")
         self.Bind(wx.EVT_MENU, self.OnConvert, self.menu_convert)
 
+        self.menu_median_filter=self.menu_ocr.Append(-1,"Median Filter\n中值滤波")
+        self.Bind(wx.EVT_MENU, self.OnMedianFilter, self.menu_median_filter)
+
         self.menu_binary=self.menu_ocr.Append(-1,"Binary Image\n图像二值化")
         self.Bind(wx.EVT_MENU, self.OnBinary, self.menu_binary)
 
-        self.menu_denoise = self.menu_ocr.Append(-1, "Image Denoising\n图像去噪")#图像去噪
+        self.menu_denoise = self.menu_ocr.Append(-1, "Image Denoising\n图像去噪")#图像去噪 медианный фильтр median filter dct
 
         self.menu_tilt=self.menu_ocr.Append(-1,"Tilt Correction\n倾斜处理") #倾斜处理
 
@@ -65,6 +69,9 @@ class MyFrame(wx.Frame):
 
         #debug
         self.menu_debug = wx.Menu()
+        self.menu_undo=self.menu_debug.Append(-1,"Undo")
+        self.Bind(wx.EVT_MENU, self.OnDebug_undo, self.menu_undo)
+
         self.menu_hist=self.menu_debug.Append(-1,"Histogram") #文档
         self.Bind(wx.EVT_MENU, self.OnDebug_hist, self.menu_hist)
 
@@ -79,6 +86,17 @@ class MyFrame(wx.Frame):
         #显示面板
         self.Canvas = wx.StaticBitmap(self.sw, bitmap=wx.EmptyBitmap(0,0))
         self.image=[] #PIL.Image list 显示第一个
+
+
+    def OnDebug_undo(self,event):
+        '''
+        Undo
+        '''
+        try:
+            self.image.pop(0)
+            self.CanvasUpdate()
+        except:
+            pass
 
     def OnDebug_hist(self,event):
         '''Debug 
@@ -117,10 +135,25 @@ class MyFrame(wx.Frame):
     def OnConvert(self,event):
         """ 图像灰度化"""
         img=ocr_binary_image.ConvertImage(self.image[0])
+
         self.image.insert(0,img)
         self.CanvasUpdate()
         self.menu_binary.Enable(True)
-        
+
+    def OnMedianFilter(self,event):
+        """ 中值滤波"""
+        dlg = wx.TextEntryDialog(None, "size of median filter",  
+                                 'Median Filter', '3')  
+        size=None
+        if dlg.ShowModal() == wx.ID_OK:  
+            size = int(dlg.GetValue())
+        dlg.Destroy()
+
+        if size:
+            img=ocr_denoice_image.MedianFilter(self.image[0],size)
+            self.image.insert(0,img)
+            self.CanvasUpdate()
+
     def OnBinary(self,event):
         ''' 二值化 '''
         img=ocr_binary_image.BinaryImage(self.image[0])
@@ -146,6 +179,7 @@ class MyFrame(wx.Frame):
         self.menu_clear.Enable(True)
         self.menu_OCR.Enable(True)
         self.menu_convert.Enable(True)
+        self.menu_median_filter.Enable(True)
 
     def OnPaint(self, event):
         dc = wx.PaintDC(self)
