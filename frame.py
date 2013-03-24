@@ -9,6 +9,7 @@ import os
 from ImageTool import *
 import ocr_binary_image #二值化模块
 import ocr_denoice_image #去噪
+import ocr_segmentation_image #字符切割
 
 class MyFrame(wx.Frame):
     def __init__(self):
@@ -72,8 +73,11 @@ class MyFrame(wx.Frame):
         self.menu_undo=self.menu_debug.Append(-1,"Undo")
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, self.menu_undo)
 
-        self.menu_hist=self.menu_debug.Append(-1,"Histogram") #文档
+        self.menu_hist=self.menu_debug.Append(-1,"Histogram") #
         self.Bind(wx.EVT_MENU, self.OnDebug_hist, self.menu_hist)
+
+        self.menu_dist=self.menu_debug.Append(-1,"Distribution") #
+        self.Bind(wx.EVT_MENU, self.OnDebug_dist, self.menu_dist)
 
         menuBar = wx.MenuBar()
         menuBar.Append(self.menu_file, "File")
@@ -98,6 +102,27 @@ class MyFrame(wx.Frame):
         except:
             pass
 
+    def OnDebug_dist(self,event):
+        '''
+        背景分布
+        '''
+        class HistFrame(wx.Frame):
+            def __init__(self,image,direction):
+                ''' image=PIL.Image'''
+                dist=ocr_segmentation_image.BackgroundDistList(image,direction)
+                img=ocr_segmentation_image.DistImage(dist,direction)
+                wx.Frame.__init__(self, None, -1, "BG "+direction,size=img.size)
+                
+                img=pilImage_to_wxImage(img)
+                Canvas = wx.StaticBitmap(self, bitmap=wx.BitmapFromImage(img))
+                pass
+            pass
+
+        dialog_debug=HistFrame(self.image[0],'h')
+        dialog_debug.Show()
+        dialog_debug=HistFrame(self.image[0],'w')
+        dialog_debug.Show()
+
     def OnDebug_hist(self,event):
         '''Debug 
         灰度直方图'''
@@ -110,7 +135,7 @@ class MyFrame(wx.Frame):
                 Canvas = wx.StaticBitmap(self, bitmap=wx.BitmapFromImage(img))
                 pass
             pass
-        dialog_debug=HistFrame(self.image[-1])
+        dialog_debug=HistFrame(self.image[0])
         dialog_debug.Show()
 
     def CanvasUpdate(self):
