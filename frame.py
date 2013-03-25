@@ -17,11 +17,8 @@ class MyFrame(wx.Frame):
         self.sw = wx.ScrolledWindow(self)
         #设置图标
         icon = wx.Icon('icon.png', wx.BITMAP_TYPE_PNG)
-        #icon = wx.EmptyIcon()
-        #icon.CopyFromBitmap(wx.BitmapFromImage(wx.Image(("icon.png"), wx.BITMAP_TYPE_PNG)))
-        self.SetIcon(icon)
 
-        #文字识别状态
+        self.SetIcon(icon)
 
         #File
         self.menu_file = wx.Menu()
@@ -90,17 +87,51 @@ class MyFrame(wx.Frame):
         #显示面板
         self.Canvas = wx.StaticBitmap(self.sw, bitmap=wx.EmptyBitmap(0,0))
         self.image=[] #PIL.Image list 显示第一个
+        #文字识别状态
+        self.status=[""] #状态使用最后一个
+        self.MenuUpdate()
 
+    def MenuUpdate(self):
+        ''' 菜单更新
+        菜单允许规则
+        '''
+        #File
+        self.menu_load.Enable(True) #装载碑文图片
+        self.menu_clear.Enable("src" in self.status)
+        self.menu_exit.Enable(True)
+
+        #Edit
+        self.menu_OCR.Enable("src" in self.status) #字符识别
+        self.menu_convert.Enable("src" in self.status)
+        self.menu_median_filter.Enable("src" in self.status)
+        self.menu_binary.Enable("convert" in self.status)
+
+        self.menu_denoise.Enable("src" in self.status)#图像去噪 медианный фильтр median filter dct
+
+        self.menu_tilt.Enable(False) #倾斜处理
+
+        self.menu_segmentation.Enable(False)#字符切割
+
+        self.menu_recognition.Enable(False)#字符识别
+        self.menu_proofread.Enable(False) #结果校对
+
+        #Help
+        self.menu_doc.Enable(True)#文档
+        self.menu_about.Enable(True) #关于
+
+        #debug
+        self.menu_undo.Enable("src" in self.status)
+
+        self.menu_hist.Enable("convert" in self.status)
+        self.menu_dist.Enable("binary" in self.status) #
 
     def OnDebug_undo(self,event):
         '''
         Undo
         '''
-        try:
-            self.image.pop(0)
-            self.CanvasUpdate()
-        except:
-            pass
+        self.image.pop(0)
+        self.status.pop()
+        self.CanvasUpdate()
 
     def OnDebug_dist(self,event):
         '''
@@ -148,9 +179,12 @@ class MyFrame(wx.Frame):
             self.Canvas.SetBitmap(wx.EmptyBitmap(1,1))
             self.sw.SetScrollbars(0, 0,0,0)
 
+        self.MenuUpdate()
+
     def ClearImage(self):
         ''' 清除图像'''
-        self.image=[]
+        self.image=[None]
+        self.status=[""]
         self.CanvasUpdate()
 
     def OnClear(self,event):
@@ -162,8 +196,8 @@ class MyFrame(wx.Frame):
         img=ocr_binary_image.ConvertImage(self.image[0])
 
         self.image.insert(0,img)
+        self.status.append("convert")
         self.CanvasUpdate()
-        self.menu_binary.Enable(True)
 
     def OnMedianFilter(self,event):
         """ 中值滤波"""
@@ -177,12 +211,14 @@ class MyFrame(wx.Frame):
         if size:
             img=ocr_denoice_image.MedianFilter(self.image[0],size)
             self.image.insert(0,img)
+            self.status.append("median_filter")
             self.CanvasUpdate()
 
     def OnBinary(self,event):
         ''' 二值化 '''
         img=ocr_binary_image.BinaryImage(self.image[0])
         self.image.insert(0,img)
+        self.status.append("binary")
         self.CanvasUpdate()
 
     def OnLoad(self, event):
@@ -199,16 +235,8 @@ class MyFrame(wx.Frame):
 
         img=Image.open(fname)
         self.image=[img]
+        self.status=["src"]
         self.CanvasUpdate()
-        #菜单允许
-        self.menu_clear.Enable(True)
-        self.menu_OCR.Enable(True)
-        self.menu_convert.Enable(True)
-        self.menu_median_filter.Enable(True)
-
-    def OnPaint(self, event):
-        dc = wx.PaintDC(self)
-        dc.DrawLine(50, 60, 190, 60)
 
     def OnExit(self, event):
         self.Close()
