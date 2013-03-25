@@ -13,12 +13,12 @@ def BackgroundDistList(image,direction='h'):
     dist=[]
     width,height=image.size
     dist=[]
-
+    pix=image.load()
     if direction=='h':
         for x in range(width):
             count=0
             for y in range(height):
-                if image.getpixel((x,y))==0:
+                if pix[x,y]==0:
                     count+=1
             dist.append(count)
         return dist
@@ -28,7 +28,7 @@ def BackgroundDistList(image,direction='h'):
         for y in range(height):
             count=0
             for x in range(width):
-                if image.getpixel((x,y))==0:
+                if pix[x,y]==0:
                     count+=1
             dist.append(count)
     

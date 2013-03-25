@@ -50,7 +50,6 @@ def GetThreshold(image):
             g2=[i,histogram[i]]
 
     threshold=int((g1[0]+g2[0])/2)
-    print threshold
     return threshold
 
 def BinaryImage(image,threshold=0):
@@ -67,12 +66,12 @@ def BinaryImage(image,threshold=0):
             
     img=image.copy()
     width,height=img.size
+    pix=img.load()
     for w in range(width):
         for h in range(height):
-            if img.getpixel((w,h))>threshold:
-                img.putpixel((w,h),255)
+            if pix[w,h]>threshold:
+                pix[w,h]=255
             else:
-                img.putpixel((w,h),0)
-
+                pix[w,h]=0
                 
     return img

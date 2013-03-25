@@ -10,14 +10,14 @@ from ImageTool import *
 import ocr_binary_image #二值化模块
 import ocr_denoice_image #去噪
 import ocr_segmentation_image #字符切割
+import ImageEditor
 
 class MyFrame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, -1, "OCR",size=(500,400))
+        wx.Frame.__init__(self, None, -1, "OCR",size=(400,500))
         self.sw = wx.ScrolledWindow(self)
         #设置图标
         icon = wx.Icon('icon.png', wx.BITMAP_TYPE_PNG)
-
         self.SetIcon(icon)
 
         #File
@@ -33,7 +33,7 @@ class MyFrame(wx.Frame):
         self.menu_exit = self.menu_file.Append(-1, "Exit\n退出")
         self.Bind(wx.EVT_MENU, self.OnExit, self.menu_exit)
 
-        #Edit
+        #OCR
         self.menu_ocr = wx.Menu()
         self.menu_OCR=self.menu_ocr.Append(-1,"OCR\n文字识别") #字符识别
         self.menu_ocr.AppendSeparator()
@@ -69,15 +69,21 @@ class MyFrame(wx.Frame):
         self.menu_debug = wx.Menu()
         self.menu_undo=self.menu_debug.Append(-1,"Undo")
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, self.menu_undo)
-
-        self.menu_hist=self.menu_debug.Append(-1,"Histogram") #
+        self.menu_hist=self.menu_debug.Append(-1,"Gary Histogram") #
         self.Bind(wx.EVT_MENU, self.OnDebug_hist, self.menu_hist)
-
         self.menu_dist=self.menu_debug.Append(-1,"Distribution") #
         self.Bind(wx.EVT_MENU, self.OnDebug_dist, self.menu_dist)
 
+        #Edit
+        self.menu_edit=wx.Menu()
+        self.menu_zoom_in=self.menu_edit.Append(-1,"Zoom In") #放大
+        self.Bind(wx.EVT_MENU, self.OnZoomIn, self.menu_zoom_in)
+        self.menu_zoom_out=self.menu_edit.Append(-1,"Zoom Out") #缩小
+        self.Bind(wx.EVT_MENU, self.OnZoomOut, self.menu_zoom_out)
+
         menuBar = wx.MenuBar()
         menuBar.Append(self.menu_file, "File")
+        menuBar.Append(self.menu_edit,"Edit")
         menuBar.Append(self.menu_debug, "Debug")
         menuBar.Append(self.menu_ocr, "OCR")
         menuBar.Append(self.menu_help, "Help")
@@ -100,18 +106,14 @@ class MyFrame(wx.Frame):
         self.menu_clear.Enable("src" in self.status)
         self.menu_exit.Enable(True)
 
-        #Edit
+        #OCR
         self.menu_OCR.Enable("src" in self.status) #字符识别
         self.menu_convert.Enable("src" in self.status)
         self.menu_median_filter.Enable("src" in self.status)
         self.menu_binary.Enable("convert" in self.status)
-
         self.menu_denoise.Enable("src" in self.status)#图像去噪 медианный фильтр median filter dct
-
         self.menu_tilt.Enable(False) #倾斜处理
-
         self.menu_segmentation.Enable(False)#字符切割
-
         self.menu_recognition.Enable(False)#字符识别
         self.menu_proofread.Enable(False) #结果校对
 
@@ -121,9 +123,25 @@ class MyFrame(wx.Frame):
 
         #debug
         self.menu_undo.Enable("src" in self.status)
-
         self.menu_hist.Enable("convert" in self.status)
         self.menu_dist.Enable("binary" in self.status) #
+
+        #edit
+        self.menu_zoom_in.Enable("src" in self.status) #放大
+        self.menu_zoom_out.Enable("src" in self.status) #缩小
+
+    #---------------------------------------------------------------
+    def OnZoomIn(self,event):
+        img=ImageEditor.Scale(self.image[0],1.2)
+        self.image.insert(0,img)
+        self.status.append("scale")
+        self.CanvasUpdate()
+
+    def OnZoomOut(self,event):
+        img=ImageEditor.Scale(self.image[0],0.8)
+        self.image.insert(0,img)
+        self.status.append("scale")
+        self.CanvasUpdate()
 
     def OnDebug_undo(self,event):
         '''
@@ -183,7 +201,7 @@ class MyFrame(wx.Frame):
 
     def ClearImage(self):
         ''' 清除图像'''
-        self.image=[None]
+        self.image=[]
         self.status=[""]
         self.CanvasUpdate()
 
