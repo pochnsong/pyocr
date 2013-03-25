@@ -12,12 +12,14 @@ import ocr_denoice_image #去噪
 import ocr_segmentation_image #字符切割
 import ImageEditor
 
+APPICON="icon.png"
+
 class MyFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, -1, "OCR",size=(400,500))
         self.sw = wx.ScrolledWindow(self)
         #设置图标
-        icon = wx.Icon('icon.png', wx.BITMAP_TYPE_PNG)
+        icon = wx.Icon(APPICON, wx.BITMAP_TYPE_PNG)
         self.SetIcon(icon)
 
         #File
@@ -89,12 +91,15 @@ class MyFrame(wx.Frame):
         menuBar.Append(self.menu_help, "Help")
 
         self.SetMenuBar(menuBar)
-        self.CreateStatusBar()
+        self.statusbar=self.CreateStatusBar()
+        self.statusbar.SetFieldsCount(3)
+
         #显示面板
         self.Canvas = wx.StaticBitmap(self.sw, bitmap=wx.EmptyBitmap(0,0))
         self.image=[] #PIL.Image list 显示第一个
         #文字识别状态
         self.status=[""] #状态使用最后一个
+        self.zoom=100 #缩放级别
         self.MenuUpdate()
 
     def MenuUpdate(self):
@@ -122,7 +127,7 @@ class MyFrame(wx.Frame):
         self.menu_about.Enable(True) #关于
 
         #debug
-        self.menu_undo.Enable("src" in self.status)
+        self.menu_undo.Enable(len(self.status)>1)
         self.menu_hist.Enable("convert" in self.status)
         self.menu_dist.Enable("binary" in self.status) #
 
@@ -132,16 +137,18 @@ class MyFrame(wx.Frame):
 
     #---------------------------------------------------------------
     def OnZoomIn(self,event):
-        img=ImageEditor.Scale(self.image[0],1.2)
-        self.image.insert(0,img)
-        self.status.append("scale")
+        self.zoom+=20
         self.CanvasUpdate()
+        self.StatusBarUpdate()
 
     def OnZoomOut(self,event):
-        img=ImageEditor.Scale(self.image[0],0.8)
-        self.image.insert(0,img)
-        self.status.append("scale")
+        self.zoom-=20
+        if self.zoom<2:
+            self.zoom=2
+
         self.CanvasUpdate()
+        self.StatusBarUpdate()
+
 
     def OnDebug_undo(self,event):
         '''
@@ -161,9 +168,13 @@ class MyFrame(wx.Frame):
                 dist=ocr_segmentation_image.BackgroundDistList(image,direction)
                 img=ocr_segmentation_image.DistImage(dist,direction)
                 wx.Frame.__init__(self, None, -1, "BG "+direction,size=img.size)
-                
+                icon = wx.Icon(APPICON, wx.BITMAP_TYPE_PNG)
+                self.SetIcon(icon)
+                sw = wx.ScrolledWindow(self)
                 img=pilImage_to_wxImage(img)
-                Canvas = wx.StaticBitmap(self, bitmap=wx.BitmapFromImage(img))
+                wx.StaticBitmap(sw, bitmap=wx.BitmapFromImage(img))
+                sw.SetScrollbars(1, 1,img.GetWidth(), img.GetHeight())
+            
                 pass
             pass
 
@@ -179,6 +190,9 @@ class MyFrame(wx.Frame):
             def __init__(self,image):
                 ''' image=PIL.Image'''
                 wx.Frame.__init__(self, None, -1, "Histogram",size=(256,200))
+                icon = wx.Icon(APPICON, wx.BITMAP_TYPE_PNG)
+                self.SetIcon(icon)
+
                 img=ocr_binary_image.HistogramImage(image,256,200)
                 img=pilImage_to_wxImage(img)
                 Canvas = wx.StaticBitmap(self, bitmap=wx.BitmapFromImage(img))
@@ -190,24 +204,43 @@ class MyFrame(wx.Frame):
     def CanvasUpdate(self):
         ''' 显示图像'''
         if self.image:
-            img=pilImage_to_wxImage(self.image[0])
+            #图像视觉缩放
+            image=self.image[0]
+            if self.zoom !=100:
+                image=ImageEditor.Zoom(image,float(self.zoom)/100.0)
+
+            img=pilImage_to_wxImage(image)            
             self.Canvas.SetBitmap(wx.BitmapFromImage(img))
             self.sw.SetScrollbars(1, 1,img.GetWidth(), img.GetHeight())
         else:
             self.Canvas.SetBitmap(wx.EmptyBitmap(1,1))
             self.sw.SetScrollbars(0, 0,0,0)
+            
+            return image.resize((int(w*rate),int(h*rate)),Image.ANTIALIAS)
 
         self.MenuUpdate()
 
+    def StatusBarUpdate(self):
+        ''' 更新状态栏'''
+        if self.image:
+            w,h=self.image[0].size
+            self.statusbar.SetStatusText(str(w)+'*'+str(h),0)
+            self.statusbar.SetStatusText(str(self.zoom)+"%",1)
+        else:
+            self.statusbar.SetStatusText("",0)
+            self.statusbar.SetStatusText("",1)            
+
     def ClearImage(self):
         ''' 清除图像'''
+        self.zoom=100
         self.image=[]
         self.status=[""]
         self.CanvasUpdate()
-
+        
     def OnClear(self,event):
         ''' 清除图片'''
         self.ClearImage()
+        self.StatusBarUpdate()
 
     def OnConvert(self,event):
         """ 图像灰度化"""
@@ -255,6 +288,8 @@ class MyFrame(wx.Frame):
         self.image=[img]
         self.status=["src"]
         self.CanvasUpdate()
+        #状态栏
+        self.StatusBarUpdate()
 
     def OnExit(self, event):
         self.Close()
