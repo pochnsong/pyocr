@@ -116,7 +116,7 @@ class MyFrame(wx.Frame):
         #OCR
         self.menu_OCR.Enable("src" in self.status) #字符识别
         self.menu_convert.Enable("src" in self.status)
-        self.menu_median_filter.Enable("src" in self.status)
+        #self.menu_median_filter.Enable("src" in self.status)
         self.menu_binary.Enable("convert" in self.status)
         self.menu_denoise.Enable("src" in self.status)#图像去噪 медианный фильтр median filter dct
         self.menu_tilt.Enable(False) #倾斜处理
