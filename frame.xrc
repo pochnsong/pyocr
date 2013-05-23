@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource class="">
+  <object class="wxFrame" name="Main">
+    <object class="wxMenuBar" name="menu_bar">
+      <object class="wxMenu" name="menu_file">
+        <label>File</label>
+        <object class="wxMenuItem" name="menu_load">
+          <label>Load Image</label>
+        </object>
+        <object class="wxMenuItem" name="menu_clear">
+          <label>Clear Image</label>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="menu_exit">
+          <label>Exit</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_edit">
+        <label>Edit</label>
+        <object class="wxMenuItem" name="menu_zoom_in">
+          <label>Zoom In</label>
+        </object>
+        <object class="wxMenuItem" name="menu_zoom_out">
+          <label>Zoom Out</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_debug">
+        <label>Debug</label>
+        <object class="wxMenuItem" name="menu_undo">
+          <label>Undo</label>
+        </object>
+        <object class="wxMenuItem" name="menu_gray_hist">
+          <label>Gray Histogram Image</label>
+        </object>
+        <object class="wxMenuItem" name="menu_dist">
+          <label>Distribution</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_ocr">
+        <object class="wxMenuItem" name="menu_OCR">
+          <label>OCR\n文字识别</label>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="menu_convert">
+          <label>Convert Image\n图像灰度化</label>
+        </object>
+        <object class="wxMenuItem" name="menu_binary">
+          <label>Binary Image\n图像二值化</label>
+        </object>
+        <object class="wxMenu" name="menu_denoise">
+          <label>Image Denoising\n图像去噪</label>
+          <object class="wxMenuItem" name="menu_median_filter">
+            <label>Median Filter\n中值滤波</label>
+          </object>
+          <object class="wxMenuItem" name="menu_fcm_normal">
+            <label>FCM Normal\nFCM 常规算法</label>
+          </object>
+          <object class="wxMenuItem" name="menu_fcm_fast">
+            <label>FCM Fast\nFCM 快速算法</label>
+          </object>
+        </object>
+        <label>OCR</label>
+        <object class="wxMenuItem" name="menu_tilt">
+          <label>Tilt Correction\n倾斜处理</label>
+        </object>
+        <object class="wxMenuItem" name="menu_segmentation">
+          <label>Character Segmentation\n字符切割</label>
+        </object>
+        <object class="wxMenuItem" name="menu_recognition">
+          <label>Character Recognition\n文字识别</label>
+        </object>
+        <object class="wxMenuItem" name="menu_proofread">
+          <label>Proofread\n校对</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_help">
+        <label>Help</label>
+        <object class="wxMenuItem" name="menu_doc">
+          <label>Documentation\n文档</label>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="menu_about">
+          <label>About\n关于</label>
+        </object>
+      </object>
+    </object>
+    <object class="wxScrolledWindow" name="sw">
+      <object class="wxStaticBitmap" name="Canvas">
+        <pos>0,0</pos>
+        <size>0,0</size>
+      </object>
+    </object>
+    <object class="wxStatusBar" name="statusbar">
+      <fields>3</fields>
+    </object>
+    <size>400,500</size>
+    <title>PyOCR</title>
+  </object>
+</resource>
