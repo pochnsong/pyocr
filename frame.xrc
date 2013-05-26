@@ -58,6 +58,12 @@
           <object class="wxMenuItem" name="menu_fcm_fast">
             <label>FCM Fast\nFCM 快速算法</label>
           </object>
+          <object class="wxMenuItem" name="menu_fcm_block">
+            <label>FCM Block</label>
+          </object>
+          <object class="wxMenuItem" name="menu_kmeans">
+            <label>K-Means</label>
+          </object>
         </object>
         <label>OCR</label>
         <object class="wxMenuItem" name="menu_tilt">

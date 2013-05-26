@@ -43,6 +43,9 @@ class MyFrame(frame_xrc.xrcMain):
         self.Bind(wx.EVT_MENU, self.OnMedianFilter, id=xrc.XRCID("menu_median_filter"))
         self.Bind(wx.EVT_MENU, self.OnSegmentation, id=xrc.XRCID("menu_segmentation"))
         self.Bind(wx.EVT_MENU, self.OnFCMNormal, id=xrc.XRCID("menu_fcm_normal"))
+        self.Bind(wx.EVT_MENU, self.OnFCMFast, id=xrc.XRCID("menu_fcm_fast"))
+        self.Bind(wx.EVT_MENU, self.OnFCMBlock, id=xrc.XRCID("menu_fcm_block"))
+        self.Bind(wx.EVT_MENU, self.OnKMeans, id=xrc.XRCID("menu_kmeans"))
 
         #debug
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, id=xrc.XRCID("menu_undo"))
@@ -80,7 +83,8 @@ class MyFrame(frame_xrc.xrcMain):
         self.GetMenuBar().FindItemById(xrc.XRCID("menu_segmentation")).Enable("binary" in self.status)#字符切割
         self.GetMenuBar().FindItemById(xrc.XRCID("menu_recognition")).Enable("segmentation" in self.status)#字符识别
         self.GetMenuBar().FindItemById(xrc.XRCID("menu_proofread")).Enable(False) #结果校对
-        self.GetMenuBar().FindItemById(xrc.XRCID("menu_fcm_normal")).Enable("src" in self.status)#图像去噪 медианный фильтр median filter dct
+        self.GetMenuBar().FindItemById(xrc.XRCID("menu_fcm_normal")).Enable("src" in self.status)
+        self.GetMenuBar().FindItemById(xrc.XRCID("menu_kmeans")).Enable("binary" in self.status)
 
         #debug
         self.GetMenuBar().FindItemById(xrc.XRCID("menu_undo")).Enable(len(self.status)>1)
@@ -214,7 +218,7 @@ class MyFrame(frame_xrc.xrcMain):
         dlg.Destroy()
 
         if size:
-            img=ocr_denoice_image.MedianFilter(self.image[0],size)
+            img = ocr_denoice_image.MedianFilter(self.image[0],size)
             self.image.insert(0,img)
             self.status.append("median_filter")
             self.CanvasUpdate()
@@ -225,9 +229,30 @@ class MyFrame(frame_xrc.xrcMain):
         self.status.append("denoise")
         self.CanvasUpdate()
 
+    def OnFCMFast(self, event):
+        img = ocr_denoice_image.Denoice_FCM_Fast(self.image[0])
+
+        self.image.insert(0, img)
+        self.status.append("denoise")
+        self.CanvasUpdate()
+
+    def OnFCMBlock(self, event):
+
+        img = ocr_denoice_image.Denoice_FCM_block(self.image[0])
+        self.image.insert(0, img)
+        self.status.append("denoise")
+        self.CanvasUpdate()
+
+    def OnKMeans(self, event):
+        img = ocr_denoice_image.Denoise_kmeans(self.image[0])
+        self.image.insert(0, img)
+        self.status.append("denoise")
+        self.CanvasUpdate()
+
     def OnBinary(self,event):
         """ 二值化 """
         img=ocr_binary_image.BinaryImage(self.image[0])
+
         self.image.insert(0,img)
         self.status.append("binary")
         self.CanvasUpdate()
