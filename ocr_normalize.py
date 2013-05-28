@@ -107,7 +107,7 @@ def GetWordSide1(image):
 
     if not find:
         find = False
-        for x in range(sx, W):
+        for x in range(sx, cx):
             if find:
                 break
             for y in range(H):
@@ -135,7 +135,7 @@ def GetWordSide1(image):
 
     if not find:
         find = False
-        for x in range(sx, -1, -1):
+        for x in range(sx, cx, -1):
             for y in range(H):
                 if pix[x, y] > 0:
                     x_ = x
@@ -162,7 +162,7 @@ def GetWordSide1(image):
 
     if not find:
         find = False
-        for y in range(sy, H):
+        for y in range(sy, cy):
             if find:
                 break
             for x in range(W):

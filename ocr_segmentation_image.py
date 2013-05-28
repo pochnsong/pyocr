@@ -135,17 +135,17 @@ def Segmentation(image):
             try:
                 h = peak_w[j+1] - y
             except:
-                h = height -y
+                h = height - y
 
             im = GetWord(img, x, y, w, h)
-            im_list.append((im, i, j))
+            im_list.append((im, (i, j)))
 
     draw = ImageDraw.Draw(img)
     for x in peak_h:
-        draw.line((x, 0, x, height),fill=200)
+        draw.line((x, 0, x, height), fill=200)
 
     for y in peak_w:
-        draw.line((0, y, width, y),fill=200)
+        draw.line((0, y, width, y), fill=200)
 
     return img, im_list
 

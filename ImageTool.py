@@ -10,11 +10,11 @@ def wxImage_to_pilImage(image):
     pil.fromstring(image.GetData())
     return pil
 
-def pilImage_to_wxImage(pil,alpha=True):
+def pilImage_to_wxImage(pil, alpha=True):
     """Convert PIL Image to wx.Image."""
     if alpha:
-        image = apply( wx.EmptyImage, pil.size )
-        image.SetData( pil.convert( "RGB").tostring() )
+        image = apply(wx.EmptyImage, pil.size)
+        image.SetData(pil.convert("RGB").tostring())
         image.SetAlphaData(pil.convert("RGBA").tostring()[3::4])
     else:
         image = wx.EmptyImage(pil.size[0], pil.size[1])
