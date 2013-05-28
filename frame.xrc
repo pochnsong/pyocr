@@ -72,6 +72,9 @@
         <object class="wxMenuItem" name="menu_segmentation">
           <label>Character Segmentation\n字符切割</label>
         </object>
+        <object class="wxMenuItem" name="menu_word_show">
+          <label>Word Show</label>
+        </object>
         <object class="wxMenuItem" name="menu_recognition">
           <label>Character Recognition\n文字识别</label>
         </object>
@@ -100,6 +103,21 @@
       <fields>3</fields>
     </object>
     <size>400,500</size>
+    <title>PyOCR</title>
+  </object>
+  <object class="wxFrame" name="WordList">
+    <object class="wxMenuBar" name="menu_bar">
+      <object class="wxMenu" name="menu_segm">
+        <label>OCR</label>
+        <object class="wxMenuItem" name="menu_find_side1">
+          <label>Find Side 1</label>
+        </object>
+      </object>
+    </object>
+    <object class="wxListCtrl" name="img_list_ctrl">
+      <size>400,500</size>
+      <style>wxLC_ICON|wxLC_AUTOARRANGE</style>
+    </object>
     <title>PyOCR</title>
   </object>
 </resource>

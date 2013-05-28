@@ -189,8 +189,8 @@ def Denoise_kmeans(image):
                 block_list.append(block)
 
     print "数据长度:", len(data)
-    k1 = kmeans.KMeans(2)
-    k1.SetCenter([1,100])
+    k1 = kmeans.KMeans(3)
+    k1.SetCenter([1, 20, 100])
     k1.SetData(data)
     k1.Run()
 
@@ -199,3 +199,4 @@ def Denoise_kmeans(image):
             pix[x, y] = 0
 
     return img
+

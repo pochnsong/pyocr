@@ -11,6 +11,8 @@ import numpy
 from scipy.optimize import leastsq
 import pylab
 import Histogram
+import ocr_normalize
+import ocr_denoice_image
 
 def BackgroundDistList(image,direction='h'):
     ''' (图像,方向=h or w)'''
@@ -93,26 +95,58 @@ def DistImage(hist,direction='h'):
         return DistImage_W(hist)
 
 #---------------------------------------------------------------------------
+def GetWord(image, x, y, w, h):
+    img = Image.new("L", (w, h), 0)
+    pix_word = img.load()
+    pix = image.load()
+
+    for i in range(w):
+        for j in range(h):
+            pix_word[i, j] = pix[x+i, y+j]
+
+    return img
+
+#----------------------------------------------------------
 def Segmentation(image):
     """分割图像
     """
-    hist_value_H=BackgroundDistList(image, direction='h')
-    hist_value_W=BackgroundDistList(image, direction='w')
-
+    hist_value_H = BackgroundDistList(image, direction='h')
+    hist_value_W = BackgroundDistList(image, direction='w')
 
     img = image.copy()
-    width,height=img.size
+    width, height = img.size
 
-    draw=ImageDraw.Draw(img)
     #纵向切割
     hist_h = Histogram.Histogram(hist_value_H)
-    for x in hist_h.getPeakPosition():
-        draw.line((x, 0, x, height), fill=255)
-
     #横向切割
     hist_w = Histogram.Histogram(hist_value_W)
-    for y in hist_w.getPeakPosition():
-        draw.line((0, y, width, y), fill=255)
 
+    peak_h = hist_h.getPeakPosition()
+    peak_w = hist_w.getPeakPosition()
 
-    return img
+    im_list = []
+    for i in range(len(peak_h)):
+        for j in range(len(peak_w)):
+            x, y = peak_h[i], peak_w[j]
+            try:
+                w = peak_h[i+1] - x
+            except:
+                w = width - x
+            try:
+                h = peak_w[j+1] - y
+            except:
+                h = height -y
+
+            im = GetWord(img, x, y, w, h)
+            im_list.append((im, i, j))
+
+    draw = ImageDraw.Draw(img)
+    for x in peak_h:
+        draw.line((x, 0, x, height),fill=200)
+
+    for y in peak_w:
+        draw.line((0, y, width, y),fill=200)
+
+    return img, im_list
+
+#----------------------------------------------------------

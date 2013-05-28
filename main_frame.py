@@ -1,7 +1,9 @@
 #coding=utf8
 """
 2013 ПМ-ПУ
-Сун Цзыжуй
+Сун Цзыжу
+BOOTING
+
 """
 from PIL import Image
 import wx
@@ -9,13 +11,17 @@ from wx import xrc
 
 import os
 from ImageTool import *
-import ocr_binary_image #二值化模块
-import ocr_denoice_image #去噪
-import ocr_segmentation_image #字符切割
+#二值化模块
+import ocr_binary_image
+#去噪
+import ocr_denoice_image
+ #字符切割
+import ocr_segmentation_image
 import ImageEditor
 import frame_xrc
-APPICON="icon.png"
+import word_list_frame
 
+APPICON = "icon.png"
 
 
 class MyFrame(frame_xrc.xrcMain):
@@ -46,6 +52,7 @@ class MyFrame(frame_xrc.xrcMain):
         self.Bind(wx.EVT_MENU, self.OnFCMFast, id=xrc.XRCID("menu_fcm_fast"))
         self.Bind(wx.EVT_MENU, self.OnFCMBlock, id=xrc.XRCID("menu_fcm_block"))
         self.Bind(wx.EVT_MENU, self.OnKMeans, id=xrc.XRCID("menu_kmeans"))
+        self.Bind(wx.EVT_MENU, self.OnWordShow, id=xrc.XRCID("menu_word_show"))
 
         #debug
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, id=xrc.XRCID("menu_undo"))
@@ -233,7 +240,7 @@ class MyFrame(frame_xrc.xrcMain):
         img = ocr_denoice_image.Denoice_FCM_Fast(self.image[0])
 
         self.image.insert(0, img)
-        self.status.append("denoise")
+        self.status.append("binary")
         self.CanvasUpdate()
 
     def OnFCMBlock(self, event):
@@ -261,10 +268,17 @@ class MyFrame(frame_xrc.xrcMain):
         """
         字符切割
         """
-        img=ocr_segmentation_image.Segmentation(self.image[0])
-        self.image.insert(0,img)
+        img, self.im_list = ocr_segmentation_image.Segmentation(self.image[0])
+        self.image.insert(0, img)
         self.status.append("segmentation")
         self.CanvasUpdate()
+
+    def OnWordShow(self,event):
+        """
+        字符切割
+        """
+        word_show = word_list_frame.WordListFrame(self.im_list)
+        word_show.Show()
 
     def OnLoad(self, event):
         """ 装载"""
