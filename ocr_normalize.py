@@ -202,44 +202,21 @@ def GetWordSide1(image):
 def GetWordImage(image):
     """
     获取文字
-
-    draw = Image
-    for _x, _y in center_list:
-        draw.line(_x, fill=255)
-        draw.line(_y, fill=255)
-
-    for x in peak_h:
-        draw.line((x, 0, x, height), fill=128)
-
-    for y in peak_w:
-        draw.line((0, y, width, y), fill=128)
-
-    for im, xs, ys in im_list:
-        _x, _y, x_, y_ = ocr_normalize.GetWord1(im)
-        _x, _y, x_, y_ = _x+xs, _y+ys, x_+xs, y_+ys
-        w, h = im.size
-        draw.line((_x, _y, _x, y_), fill=50)
-        draw.line((_x, _y, x_, _y), fill=100)
-        draw.line((x_, y_, _x, y_), fill=150)
-        draw.line((x_, y_, x_, _y), fill=200)
-
-        cx, cy = ocr_normalize.GetCenterPos(im)
-        _cx = int(cx-w*0.1)
-        if _cx < 0:
-            _cx = 0
-        cx_ = int(cx+w*0.1)
-        if cx_ > w-1:
-            cx_ = w-1
-        _cy = int(cy-h*0.1)
-        if _cy < 0:
-            _cy = 0
-        cy_ = int(cy+h*0.1)
-        if cy_ > h-1:
-            cy_ = h-1
-        _cx, _cy, cx_, cy_ = _cx+xs, _cy+ys, cx_+xs, cy_+ys
-        draw.line((_cx, _cy, _cx, cy_), fill=255)
-        draw.line((_cx, _cy, cx_, _cy), fill=255)
-        draw.line((cx_, cy_, _cx, cy_), fill=255)
-        draw.line((cx_, cy_, cx_, _cy), fill=255)
     """
+    hist_image = image.histogram()[255]
+    if hist_image == 0:
+        return None
+
+    _x, _y, x_, y_ = GetWordSide1(image)
+
+    try:
+        img = image.crop(_x, _y, _x, _y)
+    except:
+        print image.size, _x, _y, x_, y_
+        return None
+
+    hist_img = img.histogram()[255]
+
+    percent = 1.0 - float(hist_image-hist_img)/float(hist_image)
+
     pass

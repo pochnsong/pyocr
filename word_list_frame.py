@@ -55,18 +55,13 @@ class WordListFrame(frame_xrc.xrcWordList):
                 print info, im.size, _x, _y, x_, y_
                 continue
                 #exit()
-            draw = ImageDraw.Draw(im)
-            draw.line((_x, _y, _x, y_), fill=100)
-            draw.line((_x, _y, x_, _y), fill=100)
-            draw.line((x_, y_, _x, y_), fill=100)
-            draw.line((x_, y_, x_, _y), fill=100)
 
             hist_im = im.histogram()[255]
             hist_img = img.histogram()[255]
             if hist_im == 0:
                 continue
             else:
-                percent = 1.0 - float(hist_im-hist_img)/float(hist_im)
+                percent = float(hist_img)/float(hist_im)
 
             img_list.append((img, percent))
 
