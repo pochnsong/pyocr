@@ -53,6 +53,7 @@ class MyFrame(frame_xrc.xrcMain):
         self.Bind(wx.EVT_MENU, self.OnFCMBlock, id=xrc.XRCID("menu_fcm_block"))
         self.Bind(wx.EVT_MENU, self.OnKMeans, id=xrc.XRCID("menu_kmeans"))
         self.Bind(wx.EVT_MENU, self.OnWordShow, id=xrc.XRCID("menu_word_show"))
+        self.Bind(wx.EVT_MENU, self.OnKMeansFast, id=xrc.XRCID("menu_kmeans_fast"))
 
         #debug
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, id=xrc.XRCID("menu_undo"))
@@ -256,7 +257,13 @@ class MyFrame(frame_xrc.xrcMain):
         self.status.append("denoise")
         self.CanvasUpdate()
 
-    def OnBinary(self,event):
+    def OnKMeansFast(self, event):
+        img = ocr_denoice_image.Denoise_kmeans_fast(self.image[0])
+        self.image.insert(0, img)
+        self.status.append("denoise")
+        self.CanvasUpdate()
+
+    def OnBinary(self, event):
         """ 二值化 """
         img=ocr_binary_image.BinaryImage(self.image[0])
 

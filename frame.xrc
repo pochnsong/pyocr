@@ -64,6 +64,9 @@
           <object class="wxMenuItem" name="menu_kmeans">
             <label>K-Means</label>
           </object>
+          <object class="wxMenuItem" name="menu_kmeans_fast">
+            <label>K-Means Fast</label>
+          </object>
         </object>
         <label>OCR</label>
         <object class="wxMenuItem" name="menu_tilt">

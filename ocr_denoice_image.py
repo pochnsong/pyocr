@@ -144,3 +144,42 @@ def Denoise_kmeans(image):
 
     return img
 
+
+def Denoise_kmeans_fast(image):
+
+    image_block = image.copy()
+    pix_image_block = image_block.load()
+
+    width, height = image_block.size
+    block_list = []
+    data = []
+
+    print "Get Block"
+    for x in range(width):
+        for y in range(height):
+            if pix_image_block[x, y] > 0:
+                #print "before:",(x, y),image_block.histogram()[255]
+                #print "id:",id(pix_image_block)
+                block = ocr_segmentation.get_block_fast(pix_image_block, x, y, width, height)
+                #print "after:", image_block.histogram()[255],len(block)
+                #sss = raw_input()
+                data.append(len(block))
+                block_list.append(block)
+
+    print "数据长度:", len(data)
+
+    k1 = kmeans.KMeans(3)
+    k1.SetCenter([1, 20, 100])
+    k1.SetData(data)
+    k1.Run()
+
+    img = image.copy()
+    pix = img.load()
+
+    for i in k1.Group[0]["data"]:
+        for x, y in block_list[i]:
+            pix[x, y] = 0
+
+    return img
+
+

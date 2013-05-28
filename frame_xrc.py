@@ -103,6 +103,7 @@ def __gettext_strings():
     _("FCM Fast\nFCM 快速算法")
     _("FCM Block")
     _("K-Means")
+    _("K-Means Fast")
     _("OCR")
     _("Tilt Correction\n倾斜处理")
     _("Character Segmentation\n字符切割")
