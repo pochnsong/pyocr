@@ -6,25 +6,27 @@ from wx import xrc
 import frame_xrc
 import ImageTool
 import ocr_normalize
-import ocr_segmentation_image
+import ocr_segmentation
 from PIL import ImageDraw
 
 class WordListFrame(frame_xrc.xrcWordList):
     def BindEvent(self):
         self.Bind(wx.EVT_MENU, self.OnGetSide1, id=xrc.XRCID("menu_find_side1"))
+        self.Bind(wx.EVT_MENU, self.OnGetSide2, id=xrc.XRCID("menu_find_side2"))
 
     def __init__(self, word_list):
         frame_xrc.xrcWordList.__init__(self, None)
         # load some images into an image list
         #创建图像列表
         self.word_list = word_list
-        w, h = word_list[0][0].size
+
         self.il = wx.ImageList(200, 200, True)
         for im, info in word_list:
             try:
                 img = ImageTool.pilImage_to_wxImage(im)
             except:
                 print im, im.size, info
+                continue
             bmp = wx.BitmapFromImage(img)
             self.il.Add(bmp)
 
@@ -47,25 +49,63 @@ class WordListFrame(frame_xrc.xrcWordList):
     def OnGetSide1(self, event):
         img_list = []
         for im, info in self.word_list:
+            hist_im = im.histogram()[255]
+            if hist_im == 0:
+                continue
+
             _x, _y, x_, y_ = ocr_normalize.GetWordSide1(im)
             #img = im.copy()
             try:
-                img = ocr_segmentation_image.GetWord(im, _x, _y, x_-_x, y_-_y)
+                img = ocr_segmentation.GetWord(im, _x, _y, x_-_x, y_-_y)
             except:
                 print info, im.size, _x, _y, x_, y_
                 continue
                 #exit()
 
-            hist_im = im.histogram()[255]
             hist_img = img.histogram()[255]
+            percent = float(hist_img)/float(hist_im)
+
+            img_list.append((img, percent))
+        print "new"
+        word_side_frame = WordListFrame(img_list)
+        word_side_frame.Show()
+
+    def OnGetSide2(self, event):
+        img_list = []
+        for im, info in self.word_list:
+            hist_im = im.histogram()[255]
             if hist_im == 0:
                 continue
-            else:
+
+            _x, _y, x_, y_ = ocr_normalize.GetWordSide1(im)
+            #img = im.copy()
+            try:
+                img = ocr_segmentation.GetWord(im, _x, _y, x_-_x, y_-_y)
+            except:
+                print info, im.size, _x, _y, x_, y_
+                continue
+                #exit()
+
+            hist_img = img.histogram()[255]
+            percent = float(hist_img)/float(hist_im)
+            print percent
+
+            if percent < 0.93:
+                _nx, _ny, nx_, ny_ = ocr_normalize.ModifyWordSide(im, _x, _y, x_, y_)
+                print "_x,_y,x_,y_",_x, _y, x_, y_
+                print "new_x,_y,x_,y_",_nx, _ny, nx_, ny_
+                print "im size:", im.size
+                try:
+                    img = ocr_segmentation.GetWord(im, _nx, _ny, nx_-_nx, ny_-_ny)
+                except:
+                    continue
+                hist_img = img.histogram()[255]
                 percent = float(hist_img)/float(hist_im)
 
             img_list.append((img, percent))
-
+        print "new"
         word_side_frame = WordListFrame(img_list)
         word_side_frame.Show()
+
 
 

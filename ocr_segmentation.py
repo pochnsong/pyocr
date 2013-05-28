@@ -7,9 +7,9 @@ image=PIL.Image
 '''
 import Image
 import ImageDraw
-import numpy
-from scipy.optimize import leastsq
-import pylab
+#import numpy
+#from scipy.optimize import leastsq
+#import pylab
 import Histogram
 import ocr_normalize
 import ocr_denoice_image
@@ -95,6 +95,34 @@ def DistImage(hist,direction='h'):
         return DistImage_W(hist)
 
 #---------------------------------------------------------------------------
+def get_block(image, x0, y0):
+    checked = []
+    get_next = [(x0, y0)]
+    pix = image.load()
+    width, height = image.size
+
+    around = [(-1, 0), (0, -1), (1, 0), (0, 1)]
+    while len(get_next) > 0:
+        tmp_get_next = []
+        for x, y in get_next:
+            checked.append((x, y))
+            for x_, y_ in around:
+                _x, _y = x+x_, y+y_
+                if _x < 0 or _y < 0 or _x >= width or _y >= height:
+                    continue
+
+                if pix[_x, _y] > 0:
+                    if (_x, _y) in checked:
+                        continue
+                    if (_x, _y) in tmp_get_next:
+                        continue
+                    tmp_get_next.append((_x, _y))
+
+        get_next = tmp_get_next
+
+    return checked
+
+
 def GetWord(image, x, y, w, h):
     img = Image.new("L", (w, h), 0)
     pix_word = img.load()

@@ -1,6 +1,7 @@
 #coding=utf8
 __author__ = 'song'
 
+import ocr_segmentation
 
 def GetCenterPos(image):
     """
@@ -101,7 +102,7 @@ def GetWordSide1(image):
                 find = True
                 break
         if not find:
-            _x = x
+            _x = x+1
             find = True
             break
 
@@ -129,7 +130,7 @@ def GetWordSide1(image):
                 break
         if not find:
             #找到空白行
-            x_ = x
+            x_ = x-1
             find = True
             break
 
@@ -156,7 +157,7 @@ def GetWordSide1(image):
                 find = True
                 break
         if not find:
-            _y = y
+            _y = y+1
             find = True
             break
 
@@ -182,7 +183,7 @@ def GetWordSide1(image):
                 find = True
                 break
         if not find:
-            y_ = y
+            y_ = y-1
             find = True
             break
 
@@ -196,7 +197,151 @@ def GetWordSide1(image):
                     find = True
                     break
 
-    return _x+1, _y+1, x_-1, y_-1
+    return _x, _y, x_, y_
+
+
+def ModifyWordSide(image, _x, _y , x_ ,y_):
+    """
+    修正文字边框
+    image 总体文字图片
+    _x, _y, x_, y_ 当前的文字边框
+    """
+    img = image.copy()
+    W, H = img.size
+    pix = img.load()
+
+    #im = ocr_segmentation.GetWord(image, _x, _y, x_-_x, y_-_y)
+
+    left = 0
+    for x in range(0, _x):
+        for y in range(H):
+            if pix[x, y] > 0:
+                left += 1
+
+    right = 0
+    for x in range(x_, W):
+        for y in range(H):
+            if pix[x, y] > 0:
+                right += 1
+    top = 0
+    for y in range(0, _y):
+        for x in range(W):
+            if pix[x, y] > 0:
+                top += 1
+
+    bottom = 0
+    for y in range(y_, H):
+        for x in range(W):
+            if pix[x, y] > 0:
+                bottom += 1
+
+    print "L:R:T:B",left, right, top, bottom
+
+    if left == max(right, left, top, bottom):
+        start = False
+        y_list = [_y, y_]
+        find = False
+        for x in range(_x-1, -1, -1):
+            for y in range(H):
+                if pix[x, y] > 0:
+                    find = True
+                    _x = x
+                    break
+            if find:
+                break
+        print "L:",_x
+        for x in range(_x-1, -1, -1):
+            find = False
+            for y in range(H):
+                if pix[x, y] > 0:
+                    find = True
+                    _x = x
+                    if y not in y_list:
+                        y_list.append(y)
+            if not find:
+                break
+
+        print "L----"
+        return _x, min(y_list), x_, max(y_list)
+
+    if right == max(right, left, top, bottom):
+        start = False
+        y_list = [_y, y_]
+        find = False
+        for x in range(x_+1, W):
+            for y in range(H):
+                if pix[x, y] > 0:
+                    find = True
+                    x_ = x
+                    break
+            if find:
+                break
+
+        for x in range(x_+1, W):
+            find = False
+            for y in range(H):
+                if pix[x, y] > 0:
+                    find = True
+                    x_ = x
+                    if y not in y_list:
+                        y_list.append(y)
+            if not find:
+                break
+
+        print "R----"
+        return _x, min(y_list), x_, max(y_list)
+
+    if top == max(right, left, top, bottom):
+        x_list = [_x, x_]
+        find = False
+        for y in range(_y-1, -1, -1):
+            for x in range(W):
+                if pix[x, y] > 0:
+                    find = True
+                    _y = y
+                    break
+            if find:
+                break
+
+        for y in range(_y-1, -1, -1):
+            find = False
+            for x in range(W):
+                if pix[x, y] > 0:
+                    find = True
+                    _y = y
+                    if x not in x_list:
+                        x_list.append(y)
+            if not find:
+                break
+
+        print "T----"
+        return min(x_list), _y, max(x_list), y_
+
+    if bottom == max(right, left, top, bottom):
+        x_list = [_x, x_]
+        find = False
+        for y in range(y_+1, H):
+            for x in range(W):
+                if pix[x, y] > 0:
+                    find = True
+                    y_ = y
+                    break
+            if find:
+                break
+
+        for y in range(y_+1, H):
+            find = False
+            for x in range(W):
+                if pix[x, y] > 0:
+                    find = True
+                    y_ = y
+                    if x not in x_list:
+                        x_list.append(y)
+            if not find:
+                break
+
+        print "B----"
+        return min(x_list), _y, max(x_list), y_
 
 
 def GetWordImage(image):

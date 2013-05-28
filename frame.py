@@ -9,7 +9,7 @@ import os
 from ImageTool import *
 import ocr_binary_image #二值化模块
 import ocr_denoice_image #去噪
-import ocr_segmentation_image #字符切割
+import ocr_segmentation #字符切割
 import ImageEditor
 
 APPICON="icon.png"
@@ -167,8 +167,8 @@ class MyFrame(wx.Frame):
         class HistFrame(wx.Frame):
             def __init__(self,image,direction):
                 """ image=PIL.Image"""
-                dist=ocr_segmentation_image.BackgroundDistList(image,direction)
-                img=ocr_segmentation_image.DistImage(dist,direction)
+                dist=ocr_segmentation.BackgroundDistList(image,direction)
+                img=ocr_segmentation.DistImage(dist,direction)
                 wx.Frame.__init__(self, None, -1, "BG "+direction,size=img.size)
                 icon = wx.Icon(APPICON, wx.BITMAP_TYPE_PNG)
                 self.SetIcon(icon)
@@ -276,7 +276,7 @@ class MyFrame(wx.Frame):
         """
         字符切割
         """
-        img=ocr_segmentation_image.Segmentation(self.image[0])
+        img=ocr_segmentation.Segmentation(self.image[0])
         self.image.insert(0,img)
         self.status.append("segmentation")
         self.CanvasUpdate()

@@ -37,6 +37,9 @@ class KMeans:
         """
         根据中心设置数据
         """
+        for k in range(self.K):
+            self.Group[k]["data"] = []
+
         for i in range(len(self.data)):
             _group = None
             for k in range(self.K):

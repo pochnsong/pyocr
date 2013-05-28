@@ -112,6 +112,9 @@
         <object class="wxMenuItem" name="menu_find_side1">
           <label>Find Side 1</label>
         </object>
+        <object class="wxMenuItem" name="menu_find_side2">
+          <label>Find Side 2</label>
+        </object>
       </object>
     </object>
     <object class="wxListCtrl" name="img_list_ctrl">
