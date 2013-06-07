@@ -54,6 +54,7 @@ class MyFrame(frame_xrc.xrcMain):
         self.Bind(wx.EVT_MENU, self.OnKMeans, id=xrc.XRCID("menu_kmeans"))
         self.Bind(wx.EVT_MENU, self.OnWordShow, id=xrc.XRCID("menu_word_show"))
         self.Bind(wx.EVT_MENU, self.OnKMeansFast, id=xrc.XRCID("menu_kmeans_fast"))
+        self.Bind(wx.EVT_MENU, self.OnBorder, id=xrc.XRCID("menu_border"))
 
         #debug
         self.Bind(wx.EVT_MENU, self.OnDebug_undo, id=xrc.XRCID("menu_undo"))
@@ -265,13 +266,13 @@ class MyFrame(frame_xrc.xrcMain):
 
     def OnBinary(self, event):
         """ 二值化 """
-        img=ocr_binary_image.BinaryImage(self.image[0])
+        img = ocr_binary_image.BinaryImage(self.image[0])
 
-        self.image.insert(0,img)
+        self.image.insert(0, img)
         self.status.append("binary")
         self.CanvasUpdate()
 
-    def OnSegmentation(self,event):
+    def OnSegmentation(self, event):
         """
         字符切割
         """
@@ -280,12 +281,23 @@ class MyFrame(frame_xrc.xrcMain):
         self.status.append("segmentation")
         self.CanvasUpdate()
 
-    def OnWordShow(self,event):
+    def OnWordShow(self, event):
         """
         字符切割
         """
         word_show = word_list_frame.WordListFrame(self.im_list)
         word_show.Show()
+
+    def OnBorder(self, event):
+        """
+        处理边界处留白
+        """
+        img = ocr_denoice_image.RemoveBlankBorder(self.image[0])
+        self.image.insert(0, img)
+        self.status.append("remove border")
+        self.CanvasUpdate()
+
+        pass
 
     def OnLoad(self, event):
         """ 装载"""

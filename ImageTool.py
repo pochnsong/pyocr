@@ -1,6 +1,6 @@
 #coding=utf8
 
-#import cv
+import cv
 from PIL import Image
 import wx
 
@@ -23,7 +23,7 @@ def pilImage_to_wxImage(pil, alpha=True):
         image.SetData(data)
     return image
 
-"""
+
 def PIL2cvmat (im):
     cv_im = cv.CreateImageHeader(im.size, cv.IPL_DEPTH_8U, 3)
     cv.SetData(cv_im, im.tostring())
@@ -37,4 +37,3 @@ def cvmat2PIL (cv_im):
     im = Image.fromstring("RGB", cv.GetSize(rgb), rgb.tostring())
     return im
 
-"""

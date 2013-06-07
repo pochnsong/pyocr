@@ -182,4 +182,20 @@ def Denoise_kmeans_fast(image):
 
     return img
 
+def RemoveBlankBorder(image):
+    """
+    删除整体图像边界处留白
+    """
+    img = image.copy()
+    width, height = img.size
+    pix = img.load()
+    #处理左边界
+    for y in range(height):
+        ocr_segmentation.get_block_fast(pix, 0, y, width, height)
+        ocr_segmentation.get_block_fast(pix, width-1, y, width, height)
 
+    for x in range(width):
+        ocr_segmentation.get_block_fast(pix, x, 0, width, height)
+        ocr_segmentation.get_block_fast(pix, x, height-1, width, height)
+
+    return img

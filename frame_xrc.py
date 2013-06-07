@@ -62,6 +62,29 @@ class xrcWordList(wx.Frame):
 
 
 
+class xrcFeature(wx.Frame):
+#!XRCED:begin-block:xrcFeature.PreCreate
+    def PreCreate(self, pre):
+        """ This function is called during the class's initialization.
+        
+        Override it for custom setup before the window is created usually to
+        set additional window styles using SetWindowStyle() and SetExtraStyle().
+        """
+        pass
+        
+#!XRCED:end-block:xrcFeature.PreCreate
+
+    def __init__(self, parent):
+        # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
+        pre = wx.PreFrame()
+        self.PreCreate(pre)
+        get_resources().LoadOnFrame(pre, parent, "Feature")
+        self.PostCreate(pre)
+
+        # Define variables for the controls, bind event handlers
+
+
+
 
 
 # ------------------------ Resource data ----------------------
@@ -97,6 +120,7 @@ def __gettext_strings():
     _("OCR\n文字识别")
     _("Convert Image\n图像灰度化")
     _("Binary Image\n图像二值化")
+    _("Border\n整体边界处的留白")
     _("Image Denoising\n图像去噪")
     _("Median Filter\n中值滤波")
     _("FCM Normal\nFCM 常规算法")
@@ -115,7 +139,14 @@ def __gettext_strings():
     _("About\n关于")
     _("PyOCR")
     _("OCR")
+    _("Find Side By Outside Borders")
     _("Find Side 1")
     _("Find Side 2")
+    _("Normalize")
+    _("Resize")
+    _("Thinning")
+    _("Match")
+    _("Match By outside And distances")
     _("PyOCR")
+    _("PyOCR Feature Extraction")
 

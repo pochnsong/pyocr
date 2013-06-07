@@ -47,6 +47,9 @@
         <object class="wxMenuItem" name="menu_binary">
           <label>Binary Image\n图像二值化</label>
         </object>
+        <object class="wxMenuItem" name="menu_border">
+          <label>Border\n整体边界处的留白</label>
+        </object>
         <object class="wxMenu" name="menu_denoise">
           <label>Image Denoising\n图像去噪</label>
           <object class="wxMenuItem" name="menu_median_filter">
@@ -112,11 +115,29 @@
     <object class="wxMenuBar" name="menu_bar">
       <object class="wxMenu" name="menu_segm">
         <label>OCR</label>
+        <object class="wxMenuItem" name="menu_find_side0">
+          <label>Find Side By Outside Borders</label>
+        </object>
         <object class="wxMenuItem" name="menu_find_side1">
           <label>Find Side 1</label>
         </object>
         <object class="wxMenuItem" name="menu_find_side2">
           <label>Find Side 2</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_normalize">
+        <label>Normalize</label>
+        <object class="wxMenuItem" name="menu_resize">
+          <label>Resize</label>
+        </object>
+        <object class="wxMenuItem" name="menu_thinning">
+          <label>Thinning</label>
+        </object>
+      </object>
+      <object class="wxMenu" name="menu_match">
+        <label>Match</label>
+        <object class="wxMenuItem" name="menu_match_od">
+          <label>Match By outside And distances</label>
         </object>
       </object>
     </object>
@@ -125,5 +146,9 @@
       <style>wxLC_ICON|wxLC_AUTOARRANGE</style>
     </object>
     <title>PyOCR</title>
+  </object>
+  <object class="wxFrame" name="Feature">
+    <title>PyOCR Feature Extraction</title>
+    <object class="wxMenuBar" name="menu_bar"/>
   </object>
 </resource>
